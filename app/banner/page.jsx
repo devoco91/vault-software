@@ -1,19 +1,9 @@
 'use client';
-import { useRef } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { FaPaperPlane } from "react-icons/fa";
 
 export default function Banner() {
-  const recaptchaRef = useRef(null);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const recaptchaValue = recaptchaRef.current?.getValue();
-    if (!recaptchaValue) {
-      alert("Please verify you're not a robot.");
-      return;
-    }
 
     const form = e.target;
     const formData = {
@@ -23,7 +13,6 @@ export default function Banner() {
       country: form.country.value,
       companyName: form.companyName.value,
       projectDescription: form.projectDescription.value,
-      recaptchaToken: recaptchaValue,
     };
 
     try {
@@ -38,7 +27,6 @@ export default function Banner() {
       if (res.ok) {
         alert("✅ Contact form submitted successfully!");
         form.reset();
-        recaptchaRef.current.reset();
       } else {
         console.error("Backend error response:", data);
         alert("❌ Error: " + (data.error || "Unknown error"));
@@ -150,22 +138,6 @@ export default function Banner() {
                 className="w-full px-3 py-2 rounded-md bg-white/20 border border-white/30 text-white placeholder-gray-300 focus:outline-none resize-none"
                 required
               />
-            </div>
-
-            <div className="flex justify-center mt-2">
-              <ReCAPTCHA ref={recaptchaRef} sitekey="6LfseJMrAAAAALblwAg0vwoZ4pdEm-BD2on-UMbf" />
-            </div>
-
-            <div className="text-xs text-gray-300 text-center">
-              This site is protected by reCAPTCHA and the Google{" "}
-              <a href="https://policies.google.com/privacy" target="_blank" className="underline hover:text-white" rel="noreferrer">
-                Privacy Policy
-              </a>{" "}
-              and{" "}
-              <a href="https://policies.google.com/terms" target="_blank" className="underline hover:text-white" rel="noreferrer">
-                Terms of Service
-              </a>{" "}
-              apply.
             </div>
 
             <button
