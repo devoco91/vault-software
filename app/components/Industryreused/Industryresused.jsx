@@ -209,21 +209,7 @@ export default function IndustryReused({
                                 </div>
                             )}
 
-                            {/* Google reCAPTCHA Widget */}
-                            {showRecaptcha && (
-                                <>
-                                    <div className="flex justify-center mt-2">
-                                        <ReCAPTCHA ref={recaptchaRef} sitekey={recaptchaSiteKey} />
-                                    </div>
-
-                                    {/* reCAPTCHA Privacy Notice */}
-                                    <div className="text-xs text-gray-300 text-center">
-                                        This site is protected by reCAPTCHA and the Google{" "}
-                                        <a href="https://policies.google.com/privacy" target="_blank" className="underline hover:text-white">Privacy Policy</a> and{" "}
-                                        <a href="https://policies.google.com/terms" target="_blank" className="underline hover:text-white">Terms of Service</a> apply.
-                                    </div>
-                                </>
-                            )}
+                          
 
                             {/* Submit Button */}
                             <button

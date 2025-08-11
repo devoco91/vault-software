@@ -28,7 +28,7 @@ function Company() {
 
                 <div className="flex gap-4 mt-5">
                     <Link
-                        href="/"
+                        href="/form"
                         className="inline-block bg-[#1447E6] text-lg text-white px-10 py-3 rounded-md hover:bg-blue-800 transition"
                     >
                         Schedule a call

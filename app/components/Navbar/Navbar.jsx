@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, Mail } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 function Navbar() {
@@ -16,11 +16,15 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    setOpenDropdown(null)
+    setIsMobileMenuOpen(false)
+  }, [pathname])
+
   const handleMouseEnter = (dropdown) => setOpenDropdown(dropdown)
   const handleMouseLeave = () => setOpenDropdown(null)
-  const toggleMobileDropdown = (dropdown) => {
+  const toggleMobileDropdown = (dropdown) =>
     setOpenDropdown(openDropdown === dropdown ? null : dropdown)
-  }
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
     setOpenDropdown(null)
@@ -30,19 +34,39 @@ function Navbar() {
     setOpenDropdown(null)
   }
 
-  const linkClasses =
-    "relative text-white hover:text-blue-400 transition-transform duration-200 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-0 after:h-[2px] after:bg-blue-400 after:transition-all after:duration-300 hover:after:w-full"
+  const transparentPages = ['/']
+  const isTransparentAllowed = transparentPages.includes(pathname)
+
+  const whiteTextPages = ['/terms', '/policy']
+  const isWhiteTextPage = whiteTextPages.includes(pathname)
+
+  const navbarBgClass =
+    isScrolled || !isTransparentAllowed ? 'bg-black' : 'bg-transparent'
+
+  const linkClasses = `
+    relative text-white hover:text-blue-400
+    transition-transform duration-200 hover:scale-105
+    after:content-[''] after:absolute after:left-0 after:bottom-[-4px]
+    after:w-0 after:h-[2px] after:bg-blue-400
+    after:transition-all after:duration-300 hover:after:w-full
+  `
+
+  // Always use white/inverted logo for visibility
+  const logoSrc = '/VAULT-removebg-preview.png'
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-black' : 'bg-transparent'}`}>
+    <div
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navbarBgClass}`}
+    >
       <div className='max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between'>
-        {/* Logo */}
         <Link href="/" className="flex items-center group">
           <div className="relative overflow-hidden rounded-lg transition-all duration-300 group-hover:bg-white/10">
             <img
-              src="/VAULT-removebg-preview.png"
+              src={logoSrc}
               alt="Vault Logo"
-              className={`transition-all duration-300 ${isScrolled ? 'h-16 w-auto' : 'h-20 w-auto'} group-hover:scale-105 filter brightness-0 invert`}
+              className={`transition-all duration-300 ${
+                isScrolled ? 'h-16 w-auto' : 'h-20 w-auto'
+              } group-hover:scale-105 ${isWhiteTextPage ? 'filter brightness-0 invert' : ''}`}
             />
           </div>
         </Link>
@@ -53,7 +77,6 @@ function Navbar() {
             <li><Link href="/" className={linkClasses}>Home</Link></li>
             <li><Link href="/services" className={linkClasses}>Services</Link></li>
 
-            {/* Industries Dropdown (Desktop) */}
             <li
               className="relative"
               onMouseEnter={() => handleMouseEnter('industries')}
@@ -65,8 +88,6 @@ function Navbar() {
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
                 </svg>
               </span>
-
-              {/* Dropdown Menu */}
               <div
                 className={`absolute left-0 mt-2 w-56 bg-black/90 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transition-all duration-300 ${
                   openDropdown === 'industries'
@@ -74,24 +95,16 @@ function Navbar() {
                     : 'opacity-0 invisible -translate-y-2'
                 }`}
               >
-                {[
-                  ['saas', 'SAAS'],
-                  ['ecommerce', 'Retail/Ecommerce'],
-                  ['fintech', 'Fintech'],
-                  ['healthcare', 'Healthcare'],
-                  ['education', 'Education'],
-                  ['logistics', 'Logistics'],
-                  ['real-estate', 'Real Estate'],
-                  ['banking', 'Banking']
-                ].map(([slug, name]) => (
-                  <Link
-                    key={slug}
-                    href={`/industries/${slug}`}
-                    className="block px-4 py-2 text-white hover:bg-blue-500 transition-colors"
-                  >
-                    {name}
-                  </Link>
-                ))}
+                {[['saas', 'SAAS'], ['ecommerce', 'Retail/Ecommerce'], ['fintech', 'Fintech'], ['healthcare', 'Healthcare'], ['education', 'Education'], ['logistics', 'Logistics'], ['real-estate', 'Real Estate'], ['banking', 'Banking']]
+                  .map(([slug, name]) => (
+                    <Link
+                      key={slug}
+                      href={`/industries/${slug}`}
+                      className="block px-4 py-2 text-white hover:bg-blue-500 transition-colors"
+                    >
+                      {name}
+                    </Link>
+                  ))}
               </div>
             </li>
 
@@ -106,7 +119,6 @@ function Navbar() {
             href="/form"
             className="hidden lg:flex items-center gap-2 bg-[#3787FF] hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-transform duration-200 hover:scale-105"
           >
-            <Mail size={18} />
             Get in Touch
           </Link>
         )}
@@ -129,7 +141,6 @@ function Navbar() {
           <Link href="/" className={linkClasses} onClick={closeMobileMenu}>Home</Link>
           <Link href="/services" className={linkClasses} onClick={closeMobileMenu}>Services</Link>
 
-          {/* Mobile Industries Dropdown */}
           <div>
             <button
               onClick={() => toggleMobileDropdown('industries')}
@@ -153,39 +164,29 @@ function Navbar() {
                 openDropdown === 'industries' ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
               }`}
             >
-              {[
-                ['saas', 'SAAS'],
-                ['ecommerce', 'Retail/Ecommerce'],
-                ['fintech', 'Fintech'],
-                ['healthcare', 'Healthcare'],
-                ['education', 'Education'],
-                ['logistics', 'Logistics'],
-                ['real-estate', 'Real Estate'],
-                ['banking', 'Banking']
-              ].map(([slug, name]) => (
-                <Link
-                  key={slug}
-                  href={`/industries/${slug}`}
-                  className={linkClasses}
-                  onClick={closeMobileMenu}
-                >
-                  {name}
-                </Link>
-              ))}
+              {[['saas', 'SAAS'], ['ecommerce', 'Retail/Ecommerce'], ['fintech', 'Fintech'], ['healthcare', 'Healthcare'], ['education', 'Education'], ['logistics', 'Logistics'], ['real-estate', 'Real Estate'], ['banking', 'Banking']]
+                .map(([slug, name]) => (
+                  <Link
+                    key={slug}
+                    href={`/industries/${slug}`}
+                    className={linkClasses}
+                    onClick={closeMobileMenu}
+                  >
+                    {name}
+                  </Link>
+                ))}
             </div>
           </div>
 
           <Link href="/company" className={linkClasses} onClick={closeMobileMenu}>Company</Link>
           <Link href="/casestudies" className={linkClasses} onClick={closeMobileMenu}>Case Studies</Link>
 
-          {/* Mobile CTA */}
           {pathname !== '/form' && (
             <Link
               href="/form"
               className="block bg-[#3787FF] hover:bg-blue-600 text-white px-6 py-3 rounded-lg text-center flex items-center justify-center gap-2 transition-transform duration-200 hover:scale-105 mt-4"
               onClick={closeMobileMenu}
             >
-              <Mail size={18} />
               Get in Touch
             </Link>
           )}
